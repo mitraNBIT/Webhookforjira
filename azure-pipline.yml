@@ -1,20 +1,16 @@
-jobs:
-- job: Job1
-  steps:
-    - script: |
-        echo "This is Job1"
-      displayName: "Run Job1"
+stages:
+- stage: Stage1
+  jobs:
+    - job: Job1
+      steps:
+        - script: echo "Running Stage1 Job"
+          displayName: "Stage1 - Job1"
 
-- job: Job2
-  dependsOn: Job1
-  variables:
-    JOB1_STATUS: $[ dependencies.Job1.result ]
-  steps:
-    - script: |
-        if [ "$JOB1_STATUS" = "Succeeded" ]; then
-          echo "Job1 succeeded, proceeding with Job2."
-        else
-          echo "Job1 did not succeed, aborting Job2."
-          exit 1
-        fi
-      displayName: "Check Job1 status and run Job2"
+- stage: Stage2
+  dependsOn: Stage1
+  condition: eq(dependencies.Stage1.result, 'Succeeded')
+  jobs:
+    - job: Job2
+      steps:
+        - script: echo "Running Stage2 because Stage1 succeeded"
+          displayName: "Stage2 - Job2"
