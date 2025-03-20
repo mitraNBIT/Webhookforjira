@@ -8,10 +8,10 @@ jobs:
   dependsOn: Job1
   steps:
     - script: |
-        if (dependencies.Job1.result == 'Succeeded') {
+        if [[ "$(dependencies.Job1.result)" == "Succeeded" ]]; then
           echo "Job1 succeeded, proceed with Job2."
-        } else {
+        else
           echo "Job1 failed, aborting Job2."
           exit 1
-        }
+        fi
       displayName: "Check Job1 status and run Job2"
