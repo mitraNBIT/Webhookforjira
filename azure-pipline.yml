@@ -8,9 +8,16 @@ stages:
 
 - stage: Stage2
   dependsOn: Stage1
-  condition: eq(dependencies.Stage1.result, 'Succeeded')
+  variables:
+    STAGE1_STATUS: $[ dependencies.Stage1.result ]
   jobs:
     - job: Job2
       steps:
-        - script: echo "Running Stage2 because Stage1 succeeded"
-          displayName: "Stage2 - Job2"
+        - script: |
+            if [ "$STAGE1_STATUS" = "Succeeded" ]; then
+              echo "Stage1 succeeded. Proceeding with Stage2."
+            else
+              echo "Stage1 did not succeed. Aborting Stage2."
+              exit 1
+            fi
+          displayName: "Stage2 - Check Stage1 status"
