@@ -1,0 +1,17 @@
+jobs:
+- job: Job1
+  steps:
+    - script: echo "This is Job1"
+      displayName: "Run Job1"
+
+- job: Job2
+  dependsOn: Job1
+  steps:
+    - script: |
+        if (dependencies.Job1.result == 'Succeeded') {
+          echo "Job1 succeeded, proceed with Job2."
+        } else {
+          echo "Job1 failed, aborting Job2."
+          exit 1
+        }
+      displayName: "Check Job1 status and run Job2"
